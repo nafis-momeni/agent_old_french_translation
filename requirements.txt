@@ -1,0 +1,10 @@
+langchain
+langchain-community
+langchain-core
+langchain-ollama
+langchain-google-genai
+pandas
+langchain-chroma
+chromadb
+pypdf
+# langchain-text-splitter
