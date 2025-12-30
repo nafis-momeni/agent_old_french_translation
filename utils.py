@@ -41,9 +41,9 @@ def convert_tags_to_dict(udpipe_output: str) -> dict:
 
     return tag_dict
 
-def lookup_word(entries, query, pos, visited = set(), max_depth=3):
+def lookup_word(entries, query, pos, max_depth=2):
     results = {query: {}}
-    
+    visited = set()
 
     def _lookup(q, depth):
         if q in visited or depth > max_depth:
@@ -77,7 +77,7 @@ def lookup_word(entries, query, pos, visited = set(), max_depth=3):
                         _lookup(alt_word, depth + 1)
 
     _lookup(query, 1)
-    return results, visited
+    return results
 
 
 
@@ -92,19 +92,18 @@ if __name__ == "__main__":
 
     with open("kaikki.org-dictionary-OldFrench-words.jsonl", "r") as f:
         entries = [json.loads(line) for line in f]
-    visited_words = set()
     for word, tag_info in dict_tags.items():
         if tag_info['pos_tag'] in ['VERB', 'NOUN', 'ADJ']:
-            results, visited_words = lookup_word(entries, word, tag_info['pos_tag'].lower(), visited_words, max_depth=2)
+            results = lookup_word(entries, word, tag_info['pos_tag'].lower(), max_depth=2)
             for query, words in results.items():
                 if not words:
-                    print(f"{query}, no result")
+                    print(f"{query}, no entry.\n")
                     continue
 
-                print(f"{query}:")
+                print(f"{query}, {tag_info['pos_tag']}, {tag_info['x_pos']}, {tag_info['dep_rel']}:")
                 for w, data in words.items():
                     glosses = "; ".join(set(data["glosses"]))
-                    print(f"    {w}, {data['pos']}, {glosses}")
+                    print(f"    {w}: {glosses}")
                 print()
 
             
